@@ -1,0 +1,422 @@
+原理	为什么需要用户画像，对于业务来说有何帮助
+用户画像可以帮助更好的提升业务，增加收益
+
+
+原理	有哪些维度可以用来设计用户标签
+1. 八字原则：用户消费行为分析
+2. 用户标签：年龄、性别、职业、学历
+3. 消费标签： 消费习惯
+4. 行为标签：浏览时长、次数
+5. 内容分析：用户浏览内容分析
+
+
+
+原理	用户生命周期的三个阶段
+1.获客
+2.粘客
+3.留客
+
+
+
+原理	标签从何而来
+1. PGC 专家生产
+2. UGC 普通生产
+
+
+
+原理	K-Means工作原理
+1. 随机选取K个点作为初始的类中心点
+2. 将每个点分配到最近的类中心点，形成K个类，然后重新计算类中心点
+3。直到类中心点不再发生变化
+
+
+原理	距离都有哪些表示方式
+1。曼哈顿距离
+2。欧式距离
+3。余弦距离
+4。切比雪夫距离
+
+
+
+原理	数据规范化的方法：
+1。Min-max
+   新数值=（原数值-极小值）/ （极大值-极小值）
+2。Z-Score
+   新数值= （原数值-均值）/ 标准差
+3。小数定标
+   通过移动小数点位置来进行规范化
+
+
+
+
+
+工具	如何使用K-Means对球队进行聚类	球队			https://github.com/cystanford/Recommended_System/tree/master/L2/team_cluster
+1。首先python 中提供了preprocessing这样一个类，preprocessing中有一个MinMaxScaler函数
+   from sklearn import preprocessing
+   min_max_scale=preprocessing.MinMaxScaler()
+2. 针对MinMaxScaler这个函数，我们需要把我们最开始的的特征train_x 提供进去，然后让它去fit,得到一个新的train_x
+   train_x=min_max_scaler.fit_transform(train_x)
+3. 对于新的到的train_x 我们再用k-means算法对他进行预测
+   # kmeans算法
+   kmeans.fit(train_x)
+   predict_y = kmeans.predict(train_x)
+
+ （注：聚类是无监督的学习，具体的含义还需要我们指定；
+     什么情况下会使用聚类：
+     1。人工打标签成本太高
+     2。如果不知道改怎么打标签，可以让机器先跑出几类，再去看下这每个类别到底代表什么含义，通过后面再做具体的分析，给类别一个有含义的标识。
+        也就是说缺乏一些经验知识的时候可以使用聚类）
+
+
+
+
+
+工具	使用SimpleTagBased算法进行TOP-N推荐	 Delicious			https://github.com/cystanford/Recommended_System/tree/master/L2/delicious-2k
+(已经对这些数据打上了标签，如何利用用户标签做一些推荐呢？)
+SimpleTagBased算法：
+1。统计每个用户的常用标签（用户画像）
+2。对于每个标签，统计被打过这个标签次数最多的商品（Item的特征提取）
+3。对于一个用户，找到他常用的标签，然后找到具有这些标签的最热门的物品推荐给他（用户画像和Item之间的关联，基于内容的推荐）
+
+用户u对商品i的兴趣，用户和商品之间的关联可能不止一个，可能有多个tag1 tag2 tag3,所以需要对每个tag都做
+计算，然后把所有的score累加起来
+
+以上算法可能存在一些问题：
+一个用户可能会打多个标签，也就是这个标签在用户画像中不明显，所以NormTagBased是对这个算法的改进
+
+数据结构的定义：
+用户打标签记录：records[i]={user,item,tag}
+用户打过的标签：user_tags[u][t]
+用户打过标签的商品： user_items[u][i]
+打上某标签的商品： tag_items[t][i]
+某标签使用过的用户：tag_user[t][u]
+
+
+
+
+
+原理	评测指标：准确率，召回率，精确率，F值
+准确率：我们去做一个预测，有可能预测结果为正，有可能预测结果为负
+       我们把预测结果为正的或者负的都对的数（都正确的数）/总的样本数---》》即正确率/准确率
+
+精确率： 只把预测结果为正的且实际也为正的/预测结果为正的（实际为正和为负的所有结果）
+
+准确率和精确率的不同：
+精确率只考虑预测结果为正的情况的准确率，准确率考虑的维度更多，不光是预测结果为正的时候，还有预测结果为负
+的时候，只要预测结果是对的
+
+召回率：预测结果为正的情况/实际结果为正的情况下预测结果为正和为负的总和，也就是说实际为正的情况下，我们猜对的比例
+
+
+
+
+
+
+
+原理	什么是TF-IDF
+NormTagBased算法：
+
+TagBased-TFIDF算法：
+如果一个tag很热门，就会导致user_tags[t]很大，最后导致score非常大，也就是说热门标签因为权重较大，所以不能
+正常反应用户个性化的兴趣。
+这里借鉴TF-IDF的思想，使用tag_users[t]表示标签t被多少个不同的用户使用，这里也就是对标签度做了一个区分度，
+如果使用的比较多，说明这个标签也没有什么区分度，如果使用的不多，但是在这个用户下使用的比较多，就说明在这个
+用户下区分度比较高。
+什么是TF?
+TF： Term frequency 词频  TF = 单词次数/文档中总单词数
+一个单词的重要度和它在文档中出现的次数成正比。
+IDF: Inverse Document Frequency 逆向文档频率
+一个单词在文档中的区分度。这个单词这文档中出现的次数越少，证明这个单词的区分度就越大。IDF就越大。
+IDF=log(文档总数/（单词出现的文档数+1）)
+
+
+
+
+
+
+原理	基于内容的推荐系统步骤
+1。标签化 为每个item抽取出features
+2. 特征学习（profile learning）通过以前用户喜欢或者不喜欢的item的特征数据，来学习该用户的喜好特征（profile）
+3. 生成推荐列表,计算score进行排序 通过用户的profile与候选的item的特征，来推荐相关性最大的item.
+
+
+
+
+
+MNIST的10种解法：
+算法      工具
+Logistic Regression
+from sklearn.linear_model import LogisticRegression
+
+CART，ID3（决策树）
+from sklearn.tree import DecisionTreeClassifier
+决策树学习采用的是自顶向下的递归方法，其基本思想是以信息熵为度量构造一颗熵值下降最快的树，
+到叶子节点处，熵值为0。其具有可读性、分类速度快的优点，是一种有监督学习。
+ID3 Cart C4.5区别：
+是因为对信息的判断尺度不一样，不同的标准会产生不同的算法，一个树的方式，不同的节点采用什么样的方式
+最早提及决策树思想的是Quinlan在1986年提出的ID3算法(采用信息增益的方式)
+和1993年提出的C4.5算法，
+以及Breiman等人在1984年提出的CART算法(采用信息增益率的方式)
+
+LDA(线形判别分析)
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis 
+
+朴素贝叶斯
+from sklearn.naive_bayes import BernoulliNB
+朴素贝叶斯的思想基础是这样的：
+对于给出的待分类项，求解在此项出现的条件下各个类别出现的概率，哪个最大，就认为此待分类项属于哪个类别。
+通俗来说，就好比这么个道理，你在街上看到一个黑人，我问你你猜这哥们哪里来的，你十有八九猜非洲。为什么呢？
+因为黑人中非洲人的比率最高，当然人家也可能是美洲人或亚洲人，但在没有其它可用信息下，我们会选择条件概率最大的类别，
+这就是朴素贝叶斯的思想基础。
+
+朴素贝叶斯3种常用模型：
+1。高斯：对特征非常敏感，比如mnist例子种已经使用了Z-Score规范化，这里如果再使用高斯朴素贝叶斯的话，会发现识别率会非常低，可能会不到80%
+2。多项式
+3。伯努利
+
+SVM（支持向量机）
+from sklearn import svm
+
+KNN (邻近算法)
+from sklearn.neighbors import KNeighborsClassifier
+
+Adaboost(自适应增强)
+from sklearn.ensemble import  AdaBoostClassifier
+AdaBoost方法的自适应在于：前一个分类器分错的样本会被用来训练下一个分类器。 AdaBoost方法对于噪声数据和异常数据很敏感。
+
+XGBoost
+from xgboost import XGBClassifier
+Xgboost是Boosting算法的其中一种，Boosting算法的思想是将许多弱分类器集成在一起，形成一个强分类器。
+因为Xgboost是一种提升树模型，所以它是将许多树模型集成在一起，形成一个很强的分类器。而所用到的树模型则是CART回归树模型。
+
+TPOT
+from tpot import TPOTClassifier
+
+keras
+import keras
+keras是基于python的深度学习库，是用python编写的高级神经网络API
+
+
+
+
+
+
+
+工具	使用TPOT对MNIST进行分类	mnist			https://github.com/cystanford/Recommended_System/tree/master/L2/mnist
+TPOT基础python的AutoML工具
+TPOT https://github.com/EpistasisLab/tpot （6.2K）
+TPOT可以解决：
+1。特征选择（基于树模型、基于方差、基于F-值的百分比），
+2。模型选择，
+3。数据预处理（二值化、聚类、降维、正则化等）
+但不包括数据清洗
+处理小规模数据非常快，大规模数据非常慢。可以先抽样小部分，使用TPOT
+
+我们只需要输入给TPOT一个清理后的data,TPOT就可以输出给我们什么是最优的一个模型,以及模型的参数。
+参数介绍：
+# generations 代表优化的迭代的次数
+# population_size 代表遗传算法里个体的数量，采用遗传算法来找最优解，而这里最优解是个模型
+# verbosity tpot运行时能传递多少信息
+TPOT目前只能做有监督的学习
+支持的分类器主要有贝叶斯、决策树、集成树、SVM、KNN、线性模型、xgboost
+支持的回归器主要有决策树、集成树、线性模型、xgboost
+可以实现通过代码来写代码，可以说是机器学习的机器学习，通过export()方法把训练过程导出为sklearn pipelinne的.py文件
+
+
+
+
+
+
+
+pip国内的镜像：
+阿里云 http://mirrors.aliyun.com/pypi/simple/
+中国科技大学 https://pypi.mirrors.ustc.edu.cn/simple/
+豆瓣(douban) http://pypi.douban.com/simple/
+清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/
+中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple/
+
+使用方法：
+pip install tensorflow -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+
+
+
+
+
+数据质量的准则：完全合一
+完整性
+全面性
+合法性
+唯一性
+
+
+
+
+
+python中如何进行数据清洗
+DataFrame是Python中Pandas库中的一种数据结构，它类似excel，是一种二维表
+1。缺失值：删除、采用均值、采用高频数据
+   dataframe函数 df['Age'].fillna(df['Age'].mean(), inplace=True)
+2。空行
+   df.dropna(how='all',inplace=True)
+3。列数据的单位不统一
+   比如说需要统一将磅（lbs）转化为千克（kgs）
+   # 获取 weight 数据列中单位为 lbs 的数据
+      rows_with_lbs = df['weight'].str.contains('lbs').fillna(False)
+   # 将 lbs转换为 kgs, 2.2lbs=1kgs
+       for i,lbs_row in df[rows_with_lbs].iterrows():
+	       # 截取从头开始到倒数第三个字符之前，即去掉lbs。
+	           weight = int(float(lbs_row['weight'][:-3])/2.2)
+	           df.at[i,'weight'] = '{}kgs'.format(weight) 
+4. 非ASCII码
+   删除非ASCII码字符
+5。一列有多个参数
+   # 切分名字，删除源数据列
+    df[['first_name','last_name']] = df['name'].str.split(expand=True)
+    df.drop('name', axis=1, inplace=True)
+    默认采用的空格进行分割，相当于df['name'].str.split(' ', expand=True)
+
+
+
+
+
+
+工具	使用Python对Titanic数据进行清洗	Titanic			https://github.com/cystanford/Recommended_System/tree/master/L2/titanic
+字段  描述
+PassengerId 乘客编号
+Survived 是否幸存
+Pclas，有些特征标注的英文，船票等级
+Name 乘客姓名
+Sex  乘客性别
+Sibsp 亲戚数量（兄妹、配偶数）
+Parch 亲戚数量（父母、子女数）
+Ticket 船票号码
+Fare 船票价格
+Cabin 船舱
+Embarked 登陆港口
+
+print(data.info())
+print(data.describe())
+#查看离散数据类型的分布
+print(data.describe(include=['O']))
+#显示数据大小
+print(dada.shape)
+#查看前五条数据
+print(data.head(5))
+#查看后五条数据
+print(data.tail(5))
+
+缺失值处理：
+# 使用平均年龄来填充年龄中的nan值
+train_data['Age'].fillna(train_data['Age'].mean(), inplace=True)
+test_data['Age'].fillna(test_data['Age'].mean(),inplace=True)
+# 使用票价的均值填充票价中的nan值
+train_data['Fare'].fillna(train_data['Fare'].mean(), inplace=True)
+test_data['Fare'].fillna(test_data['Fare'].mean(),inplace=True)
+
+#查看Embarked字段中取值的分布数量
+print(data['Embarked'].value_counts())
+'''
+[5 rows x 12 columns]
+S    644
+C    168
+Q     77
+'''
+# 使用登录最多的港口来填充登录港口的nan值
+train_data['Embarked'].fillna('S', inplace=True)
+test_data['Embarked'].fillna('S',inplace=True)
+
+# 特征选择
+features = ['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']
+train_features = train_data[features]
+
+dvec=DictVectorizer(sparse=False)
+DictVectorizer将非数字化的值数字化，比如将Embarked='S' 设为1 将Embarked != 'S' 设为0
+train_features=dvec.fit_transform(train_features.to_dict(orient='record'))
+print(dvec.feature_names_)
+
+
+
+
+
+
+
+工具	使用Python对Steam Video Games数据进行清洗	Steam Video Games			https://github.com/cystanford/Recommended_System/tree/master/L2/steam_video_games
+数据探索
+数据集没有缺失值（不需要填充）
+无用字段 Not Needed
+Action 和 Hours字段合并为Hours_Played
+（0表示仅购买，还没有玩。>0表示购买且游戏时长）
+
+数据预处理：
+  # 创建Hours_Played字段，替代原有的Action和Hours，0表示仅购买，大于0表示购买且游戏时长
+    df['Hours_Played'] = df['Hours'].astype('float32')
+  # 如果字段Action=purchase，并且Hours=1.0，将设置Hours_Played=0
+    df.loc[(df['Action'] == 'purchase') & (df['Hours'] == 1.0), 'Hours_Played'] = 0
+    print('增加了Hours_Played字段后，数据大小')
+    print(df.shape)
+  # 对数据从小到大进行排序, df下标也会发生变化
+    df = df.sort_values(['UserID', 'Game', 'Hours_Played'], ascending=True)
+  # 删除重复项，保留最后一项出现的项（因为最后一项是用户游戏时间）
+    clean_df = df.drop_duplicates(['UserID', 'Game'], keep = 'last')
+  # 去掉不用的列：Action, Hours, Not Needed
+    clean_df = clean_df.drop(['Action', 'Hours', 'Not Needed'], axis = 1)
+    print('删除重复项后的数据集：')
+    print(clean_df)
+    print(clean_df.head(0))
+
+数据探索：
+    n_users = len(clean_df.UserID.unique())
+    n_games = len(clean_df.Game.unique())
+    print('数据集中包含了 {0} 玩家，{1} 游戏'.format(n_users, n_games))
+  # 矩阵的稀疏性
+    sparsity = clean_df.shape[0] / float(n_users * n_games)
+    print('用户行为矩阵的稀疏性（填充比例）为{:.2%} '.format(sparsity))
+
+
+
+
+
+
+
+
+课下思考与练习
+Thinking1	如何使用用户标签来指导业务（如何提升业务）
+根据用户标签可以获取用户的一些特征，用户画像，精准营销，获取客户；根据我们的item特征，与用户特征做一些关联，推荐用户感兴趣的
+item,粘住客户；最后，也要做一些预测，比如说有一些客户可能会流失，及时采取一些措施。
+
+
+Thinking2	如果给你一堆用户数据，没有打标签。你该如何处理（如何打标签）
+1。可以让机器去打标签，先跑出几类，再去看下这每个类别到底代表什么含义，通过后面再做具体的分析，给类别一个有含义的标识。
+2。看当下热门的标签是否符合
+
+
+
+Thinking3	准确率和精确率有何不同（评估指标）
+精确率考虑的是预测结果为正的情况下的准确率
+准确率考虑的维度更多，不光考虑预测结果为正的，还有预测结果为负的时候，只有预测结果是对的都会考虑。
+
+
+Thinking4	如果你使用大众点评，想要给某个餐厅打标签。这时系统可以自动提示一些标签，你会如何设计（标签推荐）
+1. 直接使用系统最热门的标签
+2。使用这家餐厅里相应物品上最热门的标签
+3。使用用户经常使用的标签
+将2和3进行加权融合，生成最终的标签推荐结果
+
+
+
+Thinking5	我们今天使用了10种方式来解MNIST，这些方法有何不同？你还有其他方法来解决MNIST识别问题么（分类方法）
+这10种方式，从代码的角度，前8种都比较类似，第9种tpot的方式功能上是前几种的集合，但不需要进行数据规范化，可以帮助我们
+只输入一个清洗后的数据，就可以得到一个最有的模型。
+还可以使用分类的方法是实现MNIST,sgd=SGDClassifier(random_state=32),详见附件mnist_sgd.py
+
+
+
+Action1	针对Delicious数据集，对SimpleTagBased算法进行改进（使用NormTagBased、TagBased-TFIDF算法）	Delicious
+
+Action2	"对Titanic数据进行清洗，建模并对乘客生存进行预测。使用之前介绍过的10种模型中的至少2种（包括TPOT）
+"	Titanic
+对Titanic数据进行清洗
+特征选择
+模型选择（使用之前介绍过的10种的至少2种）
+模型评估
