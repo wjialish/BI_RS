@@ -35,3 +35,12 @@ pred_ans = model.predict(test_model_input, batch_size=256)
 mse = round(mean_squared_error(test[target].values, pred_ans), 4)
 rmse = mse ** 0.5
 print("test RMSE", rmse)
+
+
+
+'''
+Train on 128 samples, validate on 32 samples
+2019-11-03 02:22:40.617580: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+128/128 [==============================] - 1s 6ms/sample - loss: 14.2661 - mean_squared_error: 14.2661 - val_loss: 15.5099 - val_mean_squared_error: 15.5099
+test RMSE 3.527959750337297
+'''

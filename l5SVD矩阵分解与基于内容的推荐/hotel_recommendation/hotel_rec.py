@@ -1,7 +1,3 @@
-# 基于用户选择的酒店，推荐相似度高的top10个酒店
-# 方法：计算当前酒店特征向量与整个酒店特征酒店的余弦相似度，取相似度最大的topk个
-#    每个搜索词都是一个向量，向量和向量之间有夹脚的关系，我们当成余弦相似度，当余弦相似度接近于1，即夹脚接近于0度。
-#    cos=1,即两向量越相似。
 import pandas as pd
 import numpy as np
 from nltk.corpus import stopwords
@@ -104,40 +100,3 @@ def recommendations(name, cosine_similarities = cosine_similarities):
 print(recommendations('Hilton Seattle Airport & Conference Center'))
 print(recommendations('The Bacon Mansion Bed and Breakfast'))
 #print(result)
-
-
-
-'''
-                             name  \
-0  Hilton Garden Seattle Downtown   
-1          Sheraton Grand Seattle   
-2   Crowne Plaza Seattle Downtown   
-3   Kimpton Hotel Monaco Seattle    
-4              The Westin Seattle   
-
-                                           address  \
-0  1821 Boren Avenue, Seattle Washington 98101 USA   
-1   1400 6th Avenue, Seattle, Washington 98101 USA   
-2                  1113 6th Ave, Seattle, WA 98101   
-3                   1101 4th Ave, Seattle, WA98101   
-4   1900 5th Avenue, Seattle, Washington 98101 USA   
-
-                                                desc  
-0  Located on the southern tip of Lake Union, the...  
-1  Located in the city's vibrant core, the Sherat...  
-2  Located in the heart of downtown Seattle, the ...  
-3  What?s near our hotel downtown Seattle locatio...  
-4  Situated amid incredible shopping and iconic a...  
-数据集中的酒店个数： 152
-第10个酒店的描述：
-Soak up the vibrant scene in the Living Room Bar and get in the mix with our live music and DJ series before heading to a memorable dinner at TRACE. Offering inspired seasonal fare in an award-winning atmosphere, it's a not-to-be-missed culinary experience in downtown Seattle. Work it all off the next morning at FIT®, our state-of-the-art fitness center before wandering out to explore many of the area's nearby attractions, including Pike Place Market, Pioneer Square and the Seattle Art Museum. As always, we've got you covered during your time at W Seattle with our signature Whatever/Whenever® service - your wish is truly our command.
-Name: W Seattle
-
-TFIDF feature names:
-3155
-idx= 49
-['Embassy Suites by Hilton Seattle Tacoma International Airport', 'DoubleTree by Hilton Hotel Seattle Airport', 'Seattle Airport Marriott', 'Motel 6 Seattle Sea-Tac Airport South', 'Knights Inn Tukwila', 'Four Points by Sheraton Downtown Seattle Center', 'Radisson Hotel Seattle Airport', 'Hampton Inn Seattle/Southcenter', 'Home2 Suites by Hilton Seattle Airport', 'Red Lion Hotel Seattle Airport Sea-Tac']
-idx= 116
-['11th Avenue Inn Bed and Breakfast', 'Shafer Baillie Mansion Bed & Breakfast', 'Gaslight Inn', 'Bed and Breakfast Inn Seattle', 'Chittenden House Bed and Breakfast', 'Hyatt House Seattle', 'Mozart Guest House', 'Silver Cloud Hotel - Seattle Broadway', 'WorldMark Seattle - The Camlin', 'Pensione Nichols Bed and Breakfast']
-
-'''

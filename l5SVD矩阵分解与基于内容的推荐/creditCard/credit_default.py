@@ -25,7 +25,6 @@ plt.figure(figsize = (6,6))
 plt.title('信用卡违约率客户\n (违约：1，守约：0)')
 sns.set_color_codes("pastel")
 sns.barplot(x = 'default.payment.next.month', y="values", data=df)
-locs, labels = plt.xticks()
 plt.show()
 # 特征选择，去掉ID字段、最后一个结果字段即可
 data.drop(['ID'], inplace=True, axis =1) #ID这个字段没有用
@@ -78,41 +77,3 @@ for model, model_name, model_param_grid in zip(classifiers, classifier_names, cl
             (model_name, model)
     ])
     result = GridSearchCV_work(pipeline, train_x, train_y, test_x, test_y, model_param_grid , score = 'accuracy')
-
-
-'''
-(30000, 25)
-                 ID       LIMIT_BAL  ...       PAY_AMT6  default.payment.next.month
-count  30000.000000    30000.000000  ...   30000.000000                30000.000000
-mean   15000.500000   167484.322667  ...    5215.502567                    0.221200
-std     8660.398374   129747.661567  ...   17777.465775                    0.415062
-min        1.000000    10000.000000  ...       0.000000                    0.000000
-25%     7500.750000    50000.000000  ...     117.750000                    0.000000
-50%    15000.500000   140000.000000  ...    1500.000000                    0.000000
-75%    22500.250000   240000.000000  ...    4000.000000                    0.000000
-max    30000.000000  1000000.000000  ...  528666.000000                    1.000000
-
-[8 rows x 25 columns]
-0    23364
-1     6636
-
-
-GridSearch最优参数： {'svc__C': 1, 'svc__gamma': 0.01}
-GridSearch最优分数： 0.8174
-准确率 0.8172
-/Users/wenjiali/anaconda3/lib/python3.7/site-packages/sklearn/model_selection/_split.py:1978: FutureWarning: The default value of cv will change from 3 to 5 in version 0.22. Specify it explicitly to silence this warning.
-  warnings.warn(CV_WARNING, FutureWarning)
-GridSearch最优参数： {'decisiontreeclassifier__max_depth': 6}
-GridSearch最优分数： 0.8186
-/Users/wenjiali/anaconda3/lib/python3.7/site-packages/sklearn/model_selection/_split.py:1978: FutureWarning: The default value of cv will change from 3 to 5 in version 0.22. Specify it explicitly to silence this warning.
-  warnings.warn(CV_WARNING, FutureWarning)
-准确率 0.8113
-GridSearch最优参数： {'randomforestclassifier__n_estimators': 6}
-GridSearch最优分数： 0.7998
-准确率 0.7994
-/Users/wenjiali/anaconda3/lib/python3.7/site-packages/sklearn/model_selection/_split.py:1978: FutureWarning: The default value of cv will change from 3 to 5 in version 0.22. Specify it explicitly to silence this warning.
-  warnings.warn(CV_WARNING, FutureWarning)
-GridSearch最优参数： {'kneighborsclassifier__n_neighbors': 8}
-GridSearch最优分数： 0.8040
-准确率 0.8036
-'''
